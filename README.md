@@ -1,2 +1,2 @@
-# home-assistant
-Home Assistant Config
+# Home Assistant
+
