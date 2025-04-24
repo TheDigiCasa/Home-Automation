@@ -1,1 +1,1 @@
-# Config About The Configuration
+# About The Configuration
