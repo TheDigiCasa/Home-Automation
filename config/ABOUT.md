@@ -1,1 +1,2 @@
-# About The Configuration
+# About the Configuration
+
