@@ -17,4 +17,4 @@ Sentry Guard [^1]
 
 
 
-[^1]: Based loosley off Auomate Eveyrthings Senry Guard. Sentry Guard monitors sesnsors pertaining to personal saftey whether it be alerts about weather, intrusion or even blood glucose alerts for members of TheDigi.Casa that are diabetic. 
+[^1]: Based loosley off Jeffrey Stones' [Senry Guard](https://github.com/thejeffreystone/homeassistant-config/blob/main/config/packages/security.yaml). Sentry Guard monitors sesnsors pertaining to personal saftey whether it be alerts about weather, intrusion or even blood glucose alerts for members of TheDigi.Casa that are diabetic. 
