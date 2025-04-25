@@ -1,3 +1,0 @@
-# Configuration Code Spring Cleaning
-
-As most do during the spring I figured now would be a good time to clean up my Home Assistant code configuration, 
