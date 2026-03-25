@@ -1,0 +1,27 @@
+# Exclude Home Assistant secrets
+secrets.yaml
+
+# Exclude all hidden files and directories
+.*
+
+# Exceptions to re-include essential hidden files (if using a whitelist approach)
+# !.gitignore
+# !.managed-by-home-assistant 
+
+# Exclude specific Home Assistant internals and cache files
+.storage/
+.cloud/
+.google.token
+deps/
+tts/
+www/icons/
+www/floorplans/
+custom_components/ # Exclude custom components (if managed elsewhere)
+
+# Exclude log and database files
+*.log
+*.log*
+*.db
+*.db-*
+pyozw.sqlite
+OZW_Log.txt
