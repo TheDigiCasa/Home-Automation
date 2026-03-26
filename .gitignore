@@ -17,6 +17,8 @@ tts/
 www/icons/
 www/floorplans/
 custom_components/ # Exclude custom components (if managed elsewhere)
+mqtt_secrets.yaml.disabled
+mqtt_secrets.yaml
 
 # Exclude log and database files
 *.log
