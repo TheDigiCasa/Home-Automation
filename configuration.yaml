@@ -1,0 +1,188 @@
+homeassistant:
+  name: !secret instance_name
+  latitude: !secret home_latitude
+  longitude: !secret home_longitude
+  elevation: !secret home_elevation
+  unit_system: us_customary
+  temperature_unit: F
+  time_zone: America/Indiana/Indianapolis
+  country: US
+  currency: USD
+  #customize: !include misc/customize.yaml
+  #external_url: !secret NabuCasa_url
+  #internal_url: !secret HASS_local_url
+  packages: !include_dir_named packages
+
+#################################################
+#Changing the default port number Home Assistant runs on
+#################################################
+#http:
+#  server_port: 8124
+#################################################
+  
+#################################################
+# Enable Themes
+#https://www.home-assistant.io/integrations/frontend/#setting-themes 
+frontend:
+  themes: !include_dir_merge_named themes
+  extra_module_url:
+    - /local/community/lovelace-card-mod/card-mod.js
+#################################################
+
+
+#################################################
+# Enable Discovery of Bluetooth (BLE) Devices
+# https://www.home-assistant.io/integrations/bluetooth
+# Example configuration.yaml entry
+bluetooth:
+#################################################
+
+#################################################
+# Enable Default Configuration
+#https://www.home-assistant.io/integrations/default_config/
+default_config:
+#################################################
+
+#################################################
+# Enables Nabu Casa functionality
+cloud: 
+#################################################
+
+
+#################################################
+#Enable Wake on LAN
+#https://www.home-assistant.io/integrations/wake_on_lan/
+#################################################
+wake_on_lan:
+#Home Assistant Wake On Lan & Home Assistant RPC Shutdown (HOW-TO) by KPeyanski
+#https://www.youtube.com/watch?v=n5zWj7QurLI
+#switch:
+#  - platform: wake_on_lan
+#    mac: 20:cf:30:32:f7:89
+#    name: “a3-pc” 
+#   host: 10.0.0.45
+#   turn_off:
+#      service: hassio.addon_stdin
+#      data:
+#        addon: core_rpc_shutdown
+#        input: a3-pc
+## End of Enable Wake on LAN#####################
+
+#################################################
+# USGS Sensor
+#################################################
+# Example configuration.yaml entry
+geo_location:
+  - platform: usgs_earthquakes_feed
+    feed_type: "past_month_all_earthquakes"
+    radius: 160
+    minimum_magnitude: 0.0
+    latitude: !secret home_latitude
+    longitude: !secret home_longitude
+    
+#################################################
+# Noonlight Integration
+#################################################
+#noonlight:
+#  id: !secret noonlight_id
+#  secret: !secret noonlight_secret
+#  api_endpoint: https://api.noonlight.com/platform/v1
+#  token_endpoint: https://noonlight.konnected.io/ha/token
+
+#################################################
+# Withings Integration
+#################################################
+#withings:
+#  client_id: !secret withings_clientid
+#  client_secret: !secret withings_consumer-secret
+##End of Withings Integration####################
+
+#################################################
+# Presence-based Lights
+# https://www.home-assistant.io/integrations/device_sun_light_trigger/
+#################################################
+#device_sun_light_trigger:
+##End of Presence-based Lights###################
+
+#################################################
+# Enable Python Scripts
+#################################################
+python_script:
+##End of Python Scripts Enable###################
+
+#################################################
+# Telegram Bot Integration
+#################################################
+telegram_bot:
+  - platform: broadcast
+    api_key: !secret telegram_bot_api_group
+    allowed_chat_ids:
+      - 1234567890 # example: 123456789 for the chat_id of a user
+      - -1234567890123 # example: -987654321 for the chat_id of a group
+      - -1234567890123_609
+##End of Telegram Bot Integration################
+
+#################################################
+# Google Translate TTS service
+#################################################
+tts:
+  - platform: google_translate
+#    cache: true
+#    cache_dir: /tmp/tts
+#    time_memory: 300
+#    base_url: http://192.168.1.XX:8123
+    service_name: google_say
+##End of Google Translate TTS Service############
+
+#################################################
+#Shell Commands
+#################################################
+shell_command:
+  shutdown_imac: "ssh -i /config/.ssh/id_rsa -o 'StrictHostKeyChecking=no' user@mac1-ip sudo shutdown -h now exit 0"
+  shutdown_waynes_macbook: "ssh -i /config/.ssh/id_rsa -o 'StrictHostKeyChecking=no' user@mac2-ip sudo shutdown -h now exit 0"
+#END OF SHELL COMMANDS###########################
+
+
+#################################################
+#Z-Wave Device Configuration
+#################################################
+#zwave:
+#  usb_path: /dev/ttyACM0
+#  config_path: /srv/homeassistant/src/python-openzwave/openzwave/config
+#  device_config: !include zwave_device_config.yaml
+# new_entity_ids: false
+##End of Z-Wave Device Configuration#############
+
+#################################################
+#INCLUDES
+#################################################
+#history: !include history.yaml
+logbook: !include logbook.yaml
+recorder: !include recorder.yaml
+logger: !include logger.yaml
+sensor: !include_dir_list sensor/
+sensor rest: !include_dir_merge_list sensor/
+automation: !include automations.yaml
+ios: !include ios.yaml
+ios split: !include_dir_merge_named packages/
+group: !include groups.yaml
+group split: !include_dir_merge_named packages/
+homekit: !include homekit.yaml
+mqtt: !include mqtt.yaml
+notify: !include notify.yaml
+#notify split: !include_dir_merge_named notify/
+#zone: !include zones.yaml
+zone split: !include_dir_merge_named packages/
+script: !include scripts.yaml
+script split: !include_dir_merge_named scripts/
+scene: !include scenes.yaml
+template: !include templates.yaml
+input_boolean: !include input_boolean.yaml
+input_datetime: !include input_datetime.yaml
+input_number: !include input_number.yaml
+input_select: !include input_select.yaml
+input_text: !include input_text.yaml
+#person: !include person.yaml
+#timer: !include_dir_merge_named packages/
+#switch: !include switch.yaml
+##End of INCLUDES################################
