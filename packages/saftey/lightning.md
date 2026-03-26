@@ -1,3 +1,7 @@
+Based off of CCOSTAN's Home Assistant Configuration: https://github.com/CCOSTAN/Home-AssistantConfig
+
+
+
 
 
 
