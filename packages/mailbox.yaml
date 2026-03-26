@@ -1,0 +1,260 @@
+---
+###################################################################################################
+# Mailbox & Package Delivery Automation
+#
+###################################################################################################
+
+input_datetime:
+  mailbox_last_triggered:
+    name: Mailbox Delivered at
+    has_date: true
+    has_time: true
+  mailbox_last_reset:
+    name: Mail has been retrieved
+    has_date: true
+    has_time: true
+  package_last_triggered:
+    name: Package Delivered at
+    has_date: true
+    has_time: true
+  package_last_reset:
+    name: Package has been retrieved
+    has_date: true
+    has_time: true
+input_boolean:
+  mail_arrived:
+    name: You've got Mail!
+    icon: mdi:mailbox
+    initial: false
+  package_arrived:
+    name: You've got a Delivery!
+    icon: mdi:package-variant
+    initial: false
+  mail_arrived_demo_boolean:
+    name: Demo Mail Arrived Boolean Toggle
+    icon: mdi:mailbox
+    initial: false
+  package_arrived_demo_boolean:
+    name: Demo Package Arrived Boolean Toggle
+    icon: mdi:package-variant
+    initial: false
+    
+#sensor:
+#  - platform: seventeentrack
+#    username: !secret 17track_jr_email
+#    password: !secret 17track_jr_pass
+
+group:
+
+script:
+
+automation:
+  - id: 'f69aebdd4d723123'
+    alias: Mailbox -- Mailbox and/or Package Delivery
+    description: Mailbox Sensor Automation
+    trigger:
+      - platform: state
+        entity_id: sensor.mailbox
+        id: Mail Delivered
+        from: closed
+        to: open
+      - platform: state
+        entity_id: sensor.mailbox
+        id: Mail Retrieved
+        from: open
+        to: closed
+      - platform: state
+        entity_id: sensor.package
+        id: Package Delivered
+        from: closed
+        to: open
+      - platform: state
+        entity_id: sensor.package
+        id: Package Retrieved
+        from: open
+        to: closed
+      - platform: state
+        entity_id: input_boolean.mail_arrived_demo_boolean
+        to: 'on'
+        id: Demo Virtual Mail Arrived Boolean
+      - platform: state
+        entity_id: input_boolean.package_arrived_demo_boolean
+        to: 'on'
+        id: Demo Package Arrived Boolean
+      - platform: state
+        entity_id: input_boolean.mail_arrived_demo_boolean
+        to: 'off'
+        id: Demo Virtual Mail Retrieved Boolean - Retrieved
+      - platform: state
+        entity_id: input_boolean.package_arrived_demo_boolean
+        to: 'off'
+        id: Demo Package Retrieved Boolean - Retrieved
+    condition: []
+    action:
+    - choose:
+      - conditions:
+        ##Choose 0##
+        - condition: trigger
+          id: Mail Delivered
+        sequence: 
+        - service: persistent_notification.create
+          data:
+            notification_id: mail_delivered
+            title: Mail was Delivered
+            message: Mail has been delivered at {{now().strftime("%m/%d/%Y %H:%M %p")}}.
+        - service: notify.mobile_app_jrs_iphone
+          data:
+            title: New Mail in Mailbox
+            message: Go get it!
+        - service: media_player.play_media
+          data:
+            media_content_id: http://192.168.1.10:8123/local/audio/yoda_message.mp3
+            media_content_type: music
+          target:
+            entity_id: media_player.house_speakers
+        - service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.mail_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.mailbox_last_triggered
+#    - service: input_boolean.turn_off
+#      data: {}
+#      entity_id: input_boolean.mail_reset
+#    - service: input_datetime.set_datetime
+#      data:
+#        timestamp: '{{ now().timestamp() }}'
+#        entity_id: input_datetime.mailbox_last_reset
+        ##Choose 1##
+      - conditions:
+        - condition: trigger
+          id: Mail Retrieved
+        sequence:
+        - service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.mail_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.mailbox_last_reset
+        ##Choose 2##
+      - conditions:
+        - condition: trigger
+          id: Package Delivered
+        sequence: 
+        - service: persistent_notification.create
+          data:
+            notification_id: package_delivered
+            title: A Package was Delivered!
+            message: A package has been delivered at {{now().strftime("%m/%d/%Y %H:%M %p")}}.
+        - service: notify.mobile_app_jrs_iphone
+          data:
+            title: New Package has Been Delivered
+            message: Go get it!
+        - service: media_player.play_media
+          data:
+            media_content_id: http://192.168.1.10:8123/local/audio/yoda_message.mp3
+            media_content_type: music
+          target:
+            entity_id: media_player.house_speakers
+        - service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.package_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.package_last_triggered
+        ##Choose 3##
+      - conditions:
+        - condition: trigger
+          id: Package Retrieved
+        sequence:
+        - service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.package_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.package_last_reset
+        ##Choose 4##
+      - conditions:
+        - condition: trigger
+          id: Demo Virtual Mail Arrived Boolean
+        sequence: 
+        - service: persistent_notification.create
+          data:
+            notification_id: package_delivered
+            title: Mail was Delivered
+            message: Mail has been delivered at {{now().strftime("%m/%d/%Y %H:%M %p")}}.
+        - service: notify.mobile_app_jrs_iphone
+          data:
+            title: New Mail in Mailbox
+            message: Go get it!
+        - service: media_player.play_media
+          data:
+            media_content_id: http://192.168.1.10:8123/local/audio/yoda_message.mp3
+            media_content_type: music
+          target:
+            entity_id: media_player.house_speakers
+        - service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.mail_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.mailbox_last_triggered
+        ##Choose 5##
+      - conditions:
+        - condition: trigger
+          id: Demo Virtual Mail Retrieved Boolean - Retrieved
+        sequence:
+        - service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.mail_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.mailbox_last_reset
+        ##Choose 6##
+      - conditions:
+        - condition: trigger
+          id: Demo Package Arrived Boolean
+        sequence: 
+        - service: persistent_notification.create
+          data:
+            notification_id: mail_delivered
+            title: A Package was Delivered
+            message: A Package has been delivered at {{now().strftime("%m/%d/%Y %H:%M %p")}}.
+        - service: notify.mobile_app_jrs_iphone
+          data:
+            title: New Package Delivered
+            message: Go get it!
+        - service: media_player.play_media
+          data:
+            media_content_id: http://192.168.1.10:8123/local/audio/yoda_message.mp3
+            media_content_type: music
+          target:
+            entity_id: media_player.house_speakers
+        - service: input_boolean.turn_on
+          data:
+            entity_id: input_boolean.package_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.mailbox_last_triggered
+        ##Choose 7##
+      - conditions:
+        - condition: trigger
+          id: Demo Package Retrieved Boolean - Retrieved
+        sequence:
+        - service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.package_arrived
+        - service: input_datetime.set_datetime
+          data:
+            timestamp: '{{ now().timestamp() }}'
+            entity_id: input_datetime.package_last_reset
+      default: []
+    mode: queued
+    max: 5

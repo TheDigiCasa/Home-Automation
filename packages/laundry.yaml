@@ -1,0 +1,239 @@
+---
+####################################################################################################
+# Laundry 
+####################################################################################################
+
+#input_number:
+#  washer_cycle_time:
+#    name: Washer Cycle Time
+#    min: 0.05
+#    max: 0.99
+#    initial: 0.13
+#    icon: mdi:washing-machine
+#    mode: slider
+#  dryer_cycle_time:
+#    name: Dryer Cycle Time
+#    min: 0.05
+#    max: 0.99
+#    initial: 0.13
+#    icon: mdi:tumble-dryer
+#    mode: slider
+input_select:
+  wash_cycle_mode:
+    name: 'Select Wash Cycle'
+    options:
+      - Permanent Press
+      - Delicate
+      - Clean Washer
+    initial: Permanent Press
+    icon: mdi:washing-machine
+  dryer_cycle_mode:
+    name: 'Select Dryer Cycle'
+    options:
+      - Permanent Press
+      - Delicate
+    initial: Permanent Press
+    icon: mdi:tumble-dryer
+  laundry_mode:
+    name: 'Select Laundry Mode'
+    options:
+      - Select
+      - Washer Cycle - Permanent Press
+      - Washer Cycle - Delicate
+      - Washer Cycle - Clean
+      - Dryer Cycle
+      - Dryer Delicate Cycle
+    initial: Select
+    icon: mdi:tshirt
+timer:
+  permanentpress_washer_cycle:
+    duration: "00:55:00"
+    restore: true
+    name: Washer Cycle - Permanent Press
+    icon: mdi:washing-machine
+  delicate_washer_cycle:
+    duration: "00:55:00"
+    restore: true
+    name: Washer Cycle - Delicate
+    icon: mdi:washing-machine
+  clean_washer_cycle:
+    duration: "01:20:00"
+    restore: true
+    name: Washer Cycle - Clean
+    icon: mdi:washing-machine
+  dryer_cycle:
+    duration: "01:15:00"
+    restore: true
+    name: Dryer Cycle
+    icon: mdi:tumble-dryer
+  dryer_delicate:
+    duration: "00:50:00"
+    restore: true
+    name: Dryer Delicate Cycle
+    icon: mdi:tumble-dryer
+counter:
+  clean_washer_counter:
+    name: Clean Washer Counter
+    initial: 30
+    restore: true
+    step: 1
+    maximum: 30
+    icon: mdi:washing-machine
+  pods_counter:
+    name: Tide Free & Gentle Pods Counter
+    initial: 81
+    restore: true
+    step: 1
+    maximum: 224
+    icon: mdi:washing-machine
+  white_revive_pods_counter:
+    name: Oxiclean White Revive Counter
+    initial: 81
+    restore: true
+    step: 1
+    maximum: 224
+    icon: mdi:washing-machine
+  oxiclean_colorsafe_pods_counter:
+    name: Oxiclean Color Safe Pods Counter
+    initial: 81
+    restore: true
+    step: 1
+    maximum: 224
+    icon: mdi:washing-machine
+  dryer_sheet:
+    name: Dryer Sheet
+    initial: 250
+    restore: true
+    step: 1
+    maximum: 250
+    icon: mdi:tumble-dryer
+
+automation:    
+  - id: '1fd7b45e-1383-4a97-99b1-288bf16dbf6b'
+    alias: Laundry Automation
+    description: 'Laundry Automation'
+    triggers:
+#    - trigger: state
+#      entity_id: timer.permanentpress_washer_cycle
+#      from: 'idle'
+#      to: 'active'
+#      id:  Permanent Press Cycle Started
+    - trigger: state
+      entity_id: 
+        - timer.permanentpress_washer_cycle
+        - timer.delicate_washer_cycle 
+      from: 'idle'
+      to: 'active'
+      id:  Washer Cycle Started
+    - trigger: state
+      entity_id: 
+        - timer.permanentpress_washer_cycle
+        - timer.delicate_washer_cycle 
+      from: 'active'
+      to: 'idle'
+      id:  Washer Cycle Finished
+#    - trigger: state
+#      entity_id: timer.permanentpress_washer_cycle
+#      from: 'active'
+#      to: 'idle'
+#      id: Permanent Press Cycle Finished
+#    - trigger: state
+#      entity_id: timer.delicate_washer_cycle
+#      from: 'idle'
+#      to: 'active'
+#      id:  Delicate Cycle Started
+#    - trigger: state
+#      entity_id: timer.delicate_washer_cycle
+#      from: 'active'
+#      to: 'idle'
+#      id:  Delicate Cycle Finished
+    - trigger: state
+      entity_id: timer.clean_washer_cycle
+      from: 'idle'
+      to: 'active'
+      id:  Clean Washer Cycle Started
+    - trigger: state
+      entity_id: timer.clean_washer_cycle
+      from: 'active'
+      to: 'idle'
+      id: Clean Washer Cycle Finished
+    - trigger: state
+      entity_id: 
+        - timer.dryer_cycle
+        - timer.dryer_delicate 
+      from: 'idle'
+      to: 'active'
+      id:  Dryer Cycle Started
+    - trigger: state
+      entity_id: 
+        - timer.dryer_cycle
+        - timer.dryer_delicate 
+      from: 'active'
+      to: 'idle'
+      id:  Dryer Cycle Finished
+    conditions: []
+    actions:
+     - choose:
+        #Choose 0 - Washer Cycle Started
+       - conditions:
+           - condition: trigger
+             id: Washer Cycle Started
+         sequence:
+           - action: counter.decrement
+             target:
+               entity_id: counter.clean_washer_counter
+             data: {}
+           - action: counter.decrement
+             target:
+               entity_id: counter.pods_counter
+             data: {}
+        #Choose 1 - Washer Cycle Finished
+       - conditions:
+           - condition: trigger
+             id: Washer Cycle Finished
+         sequence:
+           - action: tts.google_say
+             data:
+               entity_id: media_player.house_speakers
+               message: "Your {{ states('input_select.laundry_mode') }} might be finished at {{now().strftime('%H:%M:%S')}} ."
+        #Choose 2 - Clean Washer Cycle Started
+       - conditions:
+           - condition: trigger
+             id: Clean Washer Cycle Started
+         sequence:
+           - action: counter.reset
+             target:
+               entity_id: counter.clean_washer_counter
+             data: {}
+           - action: counter.set_value
+             target:
+               entity_id: counter.clean_washer_counter
+             data:
+               value: 30
+        #Choose 3 - Clean Washer Cycle Finisheed
+       - conditions:
+           - condition: trigger
+             id: Clean Washer Cycle Finished
+         sequence:
+           - action: tts.google_say
+             data:
+               entity_id: media_player.house_speakers
+               message: "Your {{ states('input_select.laundry_mode') }} might be finished at {{now().strftime('%H:%M:%S')}} ."
+        #Choose 4- Dryer Cycle
+       - conditions:
+           - condition: trigger
+             id: Dryer Cycle Started
+         sequence:
+           - action: counter.decrement
+             target:
+               entity_id: counter.dryer_sheet
+             data: {}
+        #Choose 4 - Dryer Cycle Finished
+       - conditions:
+           - condition: trigger
+             id: Dryer Cycle Finished
+         sequence:
+           - action: tts.google_say
+             data:
+               entity_id: media_player.house_speakers
+               message: "Your {{ states('input_select.laundry_mode') }} might be finished at {{now().strftime('%H:%M:%S')}} ."
