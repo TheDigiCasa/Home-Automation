@@ -33,101 +33,9 @@ group:
 
 
 automation:
-  - id: '6413695b-8157-4b8f-a546-fe31bef42d31'
-    alias: Sentry Guard -- Lightning - Lightning Alerts (OLD Automation)
-    description: CCOSTAN - Snooze Lightning Alerts
-    trigger:
-      - platform: numeric_state
-        entity_id: sensor.blitzortung_lightning_counter
-        above: "0"
-      - platform: event
-        event_type: mobile_app_notification_action
-        event_data:
-          action: SNOOZE_LIGHTNING
-        id: Snooze Lightning Alerts (Actionable Notification)
-      - platform: numeric_state
-        entity_id: sensor.blitzortung_lightning_distance
-        below: 16.0934
-        id: '16.0934'
-#      - platform: numeric_state
-#        entity_id: sensor.lightning_distance_miles
-#        below: 11
-#        id: Below 11
-    condition:
-      - condition: state
-        entity_id: input_boolean.snooze_lightning
-        state: "off"
-    action:
-      - service: notify.all
-        data: 
-          title: Sentry Guard -- Lightning - Lightning Alert!
-          message: >
-             ߌ鯸ightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home.  Be careful if outdoors.
-          data:
-            actions:
-              - action: SNOOZE_LIGHTNING
-                title: Snooze Lightning Alerts
-                destructive: true
-                authenticationRequired: true
-      - choose:
-        - conditions:
-            - condition: numeric_state
-              entity_id: sensor.blitzortung_lightning_counter
-              above: "0"
-#            - condition: numeric_state
-#              entity_id: automation.sentry_guard_lightning_lightning_alerts
-#              attribute: current
-#              below: "0"
-          sequence:
-            - service: tts.google_say
-              data:
-                entity_id: media_player.house_speakers
-                message: >-
-                  Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home,,  Remember lightning can strike any where withing 15 miles of a storm,, Do not use major appliances while an storm is in the area,,  Be careful and weather aware
-            - service: button.press
-              data: {}
-              target:
-                entity_id: button.test_light_living_room_61bc3603_identify
-            - repeat:
-                sequence:
-                  - action: button.press
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id: button.test_light_living_room_61bc3603_identify
-#                  - service: notify.lg_webos_smart_tv
-#                    data:
-#                      message: >-
-#                        'Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home.  Be careful if outdoors.'
-                  - service: tts.google_say
-                    data:
-                      entity_id: media_player.house_speakers
-                      message: >-
-                        Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home,,  Remember lightning can strike any where withing 15 miles of a storm,, Do not use major appliances while an storm is in the area,,  Be careful and weather aware
-                  - delay: 01:00:00
-                until:
-                  - condition: numeric_state
-                    entity_id: sensor.lightning_distance_miles
-                    above: 50
-            - service: tts.google_say
-              data:
-                entity_id: media_player.house_speakers
-                message: >-
-                  Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home,, I will continue to monitor and track any lighning detections and inform you when they are detected,,, Sentry Guard standing down from lightning alert status!!
-        - conditions:
-            - condition: trigger
-              id: Snooze Lightning Alerts (Actionable Notification)
-          sequence:
-            - service: input_boolean.turn_on
-              data: {}
-              target:
-                entity_id: input_boolean.snooze_lightning
-        default: []
-#      - delay: 00:30:00
-    mode: single
   - id: '93140ff8-7c59-431b-b6c5-f220a6a4456f'
-    alias: Sentry Guard -- Lightning - Lightning Alerts (25 Miles)
-    description: CCOSTAN - Snooze Lightning Alerts
+    alias: Sentry Guard / Weather / Lightning Alerts (25 Miles)
+    description: Description text is here
     trigger:
       - platform: numeric_state
         entity_id: sensor.blitzortung_lightning_counter
@@ -137,10 +45,6 @@ automation:
         event_data:
           action: SNOOZE_LIGHTNING
         id: Snooze Lightning Alerts (Actionable Notification)
-      - platform: numeric_state
-        entity_id: sensor.blitzortung_lightning_distance
-        below: 16.0934
-        id: '16.0934'
       - platform: numeric_state
         entity_id: sensor.lightning_distance_miles
         below: 26
@@ -154,7 +58,7 @@ automation:
         data: 
           title: Sentry Guard -- Lightning - Lightning Alert!
           message: >
-             ߌ鯸ightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home.  Be careful if outdoors.
+             ߌLightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home.  Be careful if outdoors.
           data:
             actions:
               - action: SNOOZE_LIGHTNING
@@ -169,10 +73,6 @@ automation:
             - condition: numeric_state
               entity_id: sensor.lightning_distance_miles
               below: "26"
-#            - condition: numeric_state
-#              entity_id: automation.sentry_guard_lightning_lightning_alerts
-#              attribute: current
-#              below: "0"
           sequence:
             - service: tts.google_say
               data:
@@ -190,20 +90,15 @@ automation:
                     data: {}
                     target:
                       entity_id: button.test_light_living_room_61bc3603_identify
-#                  - service: notify.lg_webos_smart_tv
-#                    data:
-#                      message: >-
-#                        'Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home.  Be careful if outdoors.'
+                  - service: notify.lg_webos_smart_tv
+                    data:
+                      message: >-
+                        'Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home.  Be careful if outdoors.'
                   - service: tts.google_say
                     data:
                       entity_id: media_player.house_speakers
                       message: >-
-                        Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home,,  Remember lightning can strike any where withing 15 miles of a storm,, Do not use major appliances while an storm is in the area,,  Be careful and weather aware
-                  - service: tts.google_say
-                    data:
-                      entity_id: media_player.house_speakers
-                      message: >-
-                        Light
+                        Lightning has been detected within {{(states('sensor.blitzortung_lightning_distance') | int / 1.69) | round (1, 'floor')}} Miles of our home
 #                command_line:
 #                  - switch:
 #                      name: Home Assistant System Shutdown
@@ -226,44 +121,17 @@ automation:
               data: {}
               target:
                 entity_id: input_boolean.snooze_lightning
-        default: []
-#      - delay: 00:30:00
+        default:
+          - action: tts.google_say
+            metadata: {}
+            data:
+              entity_id: media_player.house_speakers
+              message: Automation didnt function correctly, please check the logs
+          - action: tts.cloud_say
+            metadata: {}
+            data:
+              entity_id: media_player.house_speakers
+              message: Automation didnt function correctly, please check the logs
+    mode: single
     
 script:
-  lightning_warning_audible:
-    sequence:
-      - service: script.status_annc
-        data_template:
-          who: '{{ states.sensor.room_audio.state }}'
-          call_interuption: 1
-          speech_message: >-
-            <p>
-              {{ [
-                  'I have detected lightning withing 20 miles of The Abode.',
-                  'Did you see that flash? I did. Lightning is near.',
-                  'If you didnt hear the thunder you will soon. '
-                ] | random }}
-              If anyone is outside they shoudld seek shelter inside. 
-              {% if is_state('binary_sensor.garage_door', 'on') %} 
-                {{ [ 'The garage door needs to be closed. ',
-                  'Can someone close the garage?. ',
-                  'If you do not want the contents of the garage to get wet, you might want to close it.'
-                ] | random }}
-              {% endif %}
-            </p>
-  
-  lightning_clear_audible:
-    sequence:
-      - service: script.status_annc
-        data_template:
-          who: '{{ states.sensor.room_audio.state }}'
-          call_interuption: 1
-          speech_message: >-
-            <p>
-              {{ [
-                'Lightning threat appears to be over.',
-                'No more lightning appears to be occuring.',
-                'Lightning is gone.'
-            ]|random }}
-              It is safe to resume normal activities. 
-            </p>
