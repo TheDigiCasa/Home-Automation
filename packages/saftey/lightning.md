@@ -24,8 +24,7 @@ sensor:
           {% else -%}
             {{ (states("sensor.blitzortung_lightning_distance") | float * 0.621371 )| int}}
           {% endif %}
-```
-
+  ```
 *Group together the entities that the Blitzortung HACS intergration provides*
 ```yaml
 group:
@@ -35,4 +34,25 @@ group:
     - sensor.blitzortung_lightning_distance
     - sensor.lightning_distance_miles
     - input_boolean.snooze_lightning
+```
+*Trigger automation when lightning has been detected*
+```yaml
+    - platform: numeric_state
+      entity_id: sensor.blitzortung_lightning_counter
+      above: "0"
+```
+*After the Companion App-Actionable Notification the Snooze Lightning Alerts. Then the alerts will be disabled until after midnight when the Snooze (input_boolean) will reset*
+```yaml
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: SNOOZE_LIGHTNING
+      id: Snooze Lightning Alerts (Actionable Notification)
+```
+**
+```yaml
+    - platform: numeric_state
+      entity_id: sensor.lightning_distance_miles
+      below: 26
+      id: Below 26
 ```
