@@ -10,7 +10,7 @@ Components Used:
 
 
 
-This section creats a template sensor to convert the distance that Blitzortung provides in to miles. https://github.com/TheDigiCasa/Home-Automation/blob/732a06d3c1202f3ac39c62af40a25be52d4222a8/packages/saftey/lightning.yaml#L12-L22
+This section creats a template sensor to convert the distance that Blitzortung provides in to miles. 
 ```yaml
 sensor:
   - platform: template
@@ -24,4 +24,15 @@ sensor:
           {% else -%}
             {{ (states("sensor.blitzortung_lightning_distance") | float * 0.621371 )| int}}
           {% endif %}
+```
+
+*Group together the entities that the Blitzortung HACS intergration provides*
+```yaml
+group:
+  Blitzortung Alerts:
+    - sensor.blitzortung_lightning_azimuth
+    - sensor.blitzortung_lightning_counter
+    - sensor.blitzortung_lightning_distance
+    - sensor.lightning_distance_miles
+    - input_boolean.snooze_lightning
 ```
