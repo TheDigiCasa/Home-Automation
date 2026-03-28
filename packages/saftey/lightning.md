@@ -69,9 +69,67 @@ group:
 ```
 *Trigger automation when lightning has been detected*
 ```yaml
-    - platform: numeric_state
-      entity_id: sensor.blitzortung_lightning_counter
-      above: "0"
+############################
+# TEMPLATE SENSORS
+############################
+template:
+
+  #################################################
+  # 📉 TREND
+  #################################################
+  - trigger:
+      - platform: time_pattern
+        minutes: "/1"
+    sensor:
+      - name: sentry_indy_lightning_trend
+        unique_id: sentry_indy_lightning_trend
+        state: >
+          {% set current = states('sensor.blitzortung_lightning_distance') | float(999) %}
+          {% set prev = state_attr(this.entity_id, 'last') | float(current) %}
+          {% if current < prev %} approaching
+          {% elif current > prev %} departing
+          {% else %} steady
+          {% endif %}
+        attributes:
+          last: "{{ states('sensor.blitzortung_lightning_distance') | float(999) }}"
+
+      - name: sentry_shelby_lightning_trend
+        unique_id: sentry_shelby_lightning_trend
+        state: >
+          {% set current = states('sensor.lightning_distance_shelby') | float(999) %}
+          {% set prev = state_attr(this.entity_id, 'last') | float(current) %}
+          {% if current < prev %} approaching
+          {% elif current > prev %} departing
+          {% else %} steady
+          {% endif %}
+        attributes:
+          last: "{{ states('sensor.lightning_distance_shelby') | float(999) }}"
+
+  #################################################
+  # ⏱️ ETA
+  #################################################
+  - sensor:
+      - name: sentry_indy_lightning_eta
+        unique_id: sentry_indy_lightning_eta
+        unit_of_measurement: "min"
+        state: >
+          {% set d = states('sensor.blitzortung_lightning_distance') | float(999) %}
+          {% if d < 50 %}
+            {{ (d / 0.5) | int }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: sentry_shelby_lightning_eta
+        unique_id: sentry_shelby_lightning_eta
+        unit_of_measurement: "min"
+        state: >
+          {% set d = states('sensor.lightning_distance_shelby') | float(999) %}
+          {% if d < 50 %}
+            {{ (d / 0.5) | int }}
+          {% else %}
+            0
+          {% endif %}
 ```
 *After the Companion App-Actionable Notification the Snooze Lightning Alerts. Then the alerts will be disabled until after midnight when the Snooze (input_boolean) will reset*
 ```yaml
