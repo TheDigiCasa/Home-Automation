@@ -67,7 +67,7 @@ group:
     - sensor.lightning_distance_miles
     - input_boolean.snooze_lightning
 ```
-*Trigger automation when lightning has been detected*
+Defining various [template](https://www.home-assistant.io/integrations/template/) sensors *Trigger automation when lightning has been detected*
 ```yaml
 ############################
 # TEMPLATE SENSORS
